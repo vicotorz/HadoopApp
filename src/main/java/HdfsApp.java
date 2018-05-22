@@ -54,7 +54,7 @@ public class HdfsApp {
     //查看文件内容
     @Test
     public void cat() throws Exception {
-        FSDataInputStream in = new FSDataInputStream(new FileInputStream(new File("/hdfsapi/test/a.txt")));
+        FSDataInputStream in = fileSystem.open(new Path("/hdfsapi/test/a.txt"));
         IOUtils.copyBytes(in, System.out, 1024);
         in.close();
     }
@@ -72,7 +72,7 @@ public class HdfsApp {
         FSDataOutputStream output = fileSystem.create(new Path("/hdfsapi/test/hadoop.tar.gz"),
                 new Progressable() {
                     public void progress() {
-                        System.out.println("->");
+                        System.out.print("->");
                     }
                 }
         );
@@ -82,10 +82,11 @@ public class HdfsApp {
     //下载hdfs文件
     @Test
     public void copyToLocalFile() throws Exception {
-        Path localPath = new Path("E:\\h.txt");
-        Path hdfsPath = new Path("/hdfsapi/test/hello.txt");
-        fileSystem.copyToLocalFile(hdfsPath, localPath);
+        Path hdfsPath = new Path("/hdfsapi/test/b.txt");
+        Path localPath = new Path("F:\\down_load_from_hdfs.txt");
+        fileSystem.copyToLocalFile(false,hdfsPath, localPath,true);
     }
+
     //展示文件
     @Test
     public void list() throws Exception {
@@ -99,10 +100,11 @@ public class HdfsApp {
             System.out.println(isDir + "\t" + replication + "\t" + len + "\t" + path);
         }
     }
+
     //删除文件
     @Test
     public void delete() throws Exception {
-        fileSystem.delete(new Path("/"), true);
+        fileSystem.delete(new Path("/hdfsapi/test/hadoop.tar.gz"), true);
     }
 
 }
