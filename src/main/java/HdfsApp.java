@@ -25,6 +25,8 @@ public class HdfsApp {
     @Before
     public void setup() throws Exception {
         configuration = new Configuration();
+        configuration.set("dfs.client.use.datanode.hostname", "true");//让可以使用主机名传参数
+        configuration.set("fs.defaultFS", "hdfs://iz2zef94dnmkl8kf3l63r9z:8020");//主机名访问
         fileSystem = FileSystem.get(new URI(HDFS_PATH), configuration, "root");
     }
 
@@ -42,9 +44,9 @@ public class HdfsApp {
 
     //创建文件
     @Test
-    public void createFile() throws Exception {
+    public void create() throws Exception {
         FSDataOutputStream output = fileSystem.create(new Path("/hdfsapi/test/a.txt"));
-        output.write("hello".getBytes());
+        output.write("hello hadoop".getBytes());
         output.flush();
         output.close();
     }
@@ -64,6 +66,7 @@ public class HdfsApp {
     }
 
     //上传文件到HDFS
+    @Test
     public void copyFromLocalFileWithProgress() throws Exception {
         InputStream in = new BufferedInputStream(new FileInputStream(new File("E:\\hadoop-2.6.0-cdh5.7.0.tar.gz")));
         FSDataOutputStream output = fileSystem.create(new Path("/hdfsapi/test/hadoop.tar.gz"),
@@ -83,7 +86,7 @@ public class HdfsApp {
         Path hdfsPath = new Path("/hdfsapi/test/hello.txt");
         fileSystem.copyToLocalFile(hdfsPath, localPath);
     }
-
+    //展示文件
     @Test
     public void list() throws Exception {
         FileStatus[] fileStatuses = fileSystem.listStatus(new Path("/hdfsapi/test/"));
@@ -96,7 +99,7 @@ public class HdfsApp {
             System.out.println(isDir + "\t" + replication + "\t" + len + "\t" + path);
         }
     }
-
+    //删除文件
     @Test
     public void delete() throws Exception {
         fileSystem.delete(new Path("/"), true);
